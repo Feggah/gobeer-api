@@ -7,5 +7,5 @@ require (
 	github.com/google/go-cmp v0.5.6
 	github.com/gorilla/mux v1.8.0
 	github.com/mattn/go-sqlite3 v1.14.7
-	github.com/pkg/errors v0.9.1
+	github.com/stretchr/testify v1.7.0
 )
