@@ -4,19 +4,14 @@ import (
 	"database/sql"
 
 	_ "github.com/mattn/go-sqlite3"
-	"github.com/pkg/errors"
-)
-
-const (
-	errInvalidID = "Invalid ID"
 )
 
 type UseCase interface {
 	GetAll() ([]*Beer, error)
-	Get(ID int64) (*Beer, error)
+	Get(ID int) (*Beer, error)
 	Store(beer *Beer) error
 	Update(beer *Beer) error
-	Remove(ID int64) error
+	Remove(ID int) error
 }
 
 type Service struct {
@@ -49,7 +44,7 @@ func (svc *Service) GetAll() ([]*Beer, error) {
 	return result, nil
 }
 
-func (svc *Service) Get(ID int64) (*Beer, error) {
+func (svc *Service) Get(ID int) (*Beer, error) {
 	var beer Beer
 
 	stmt, err := svc.DB.Prepare("select id, name, type, style from beer where id = ?")
@@ -70,13 +65,13 @@ func (svc *Service) Store(beer *Beer) error {
 	if err != nil {
 		return err
 	}
-	stmt, err := tx.Prepare("insert into beer(id, name, type, style) values (?,?,?,?)")
+	stmt, err := tx.Prepare("insert into beer(name, type, style) values (?,?,?)")
 	if err != nil {
 		return err
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(beer.ID, beer.Name, beer.Type, beer.Style)
+	_, err = stmt.Exec(beer.Name, beer.Type, beer.Style)
 	if err != nil {
 		tx.Rollback()
 		return err
@@ -86,10 +81,6 @@ func (svc *Service) Store(beer *Beer) error {
 }
 
 func (svc *Service) Update(beer *Beer) error {
-	if beer.ID == 0 {
-		return errors.New(errInvalidID)
-	}
-
 	tx, err := svc.DB.Begin()
 	if err != nil {
 		return err
@@ -108,11 +99,7 @@ func (svc *Service) Update(beer *Beer) error {
 	return nil
 }
 
-func (svc *Service) Remove(ID int64) error {
-	if ID == 0 {
-		return errors.New(errInvalidID)
-	}
-
+func (svc *Service) Remove(ID int) error {
 	tx, err := svc.DB.Begin()
 	if err != nil {
 		return err

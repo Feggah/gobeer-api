@@ -6,7 +6,13 @@ import (
 
 	"github.com/feggah/gobeer-api/core/beer"
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	_ "github.com/mattn/go-sqlite3"
+)
+
+const (
+	errSetup  = "Error setting up the database:"
+	errSearch = "Error searching in database:"
 )
 
 func cleanDB(db *sql.DB) error {
@@ -27,14 +33,12 @@ func cleanDB(db *sql.DB) error {
 
 func setupDB() (*beer.Service, error) {
 	heineken := &beer.Beer{
-		ID:    1,
 		Name:  "Heineken",
 		Type:  beer.TypeLager,
 		Style: beer.StylePale,
 	}
 
 	becks := &beer.Beer{
-		ID:    2,
 		Name:  "Beck's",
 		Type:  beer.TypeLager,
 		Style: beer.StylePilsner,
@@ -69,12 +73,12 @@ func setupDB() (*beer.Service, error) {
 func TestGetAll(t *testing.T) {
 	service, err := setupDB()
 	if err != nil {
-		t.Fatalf("Error setting up the database: %s", err.Error())
+		t.Fatalf("%s %s", errSetup, err.Error())
 	}
 
 	beers, err := service.GetAll()
 	if err != nil {
-		t.Fatalf("Error searching in database: %s", err.Error())
+		t.Fatalf("%s %s", errSearch, err.Error())
 	}
 	if len(beers) != 2 {
 		t.Fatalf("Error getting all beers. Expected length:%d, received: %d", 2, len(beers))
@@ -83,22 +87,32 @@ func TestGetAll(t *testing.T) {
 
 func TestGet(t *testing.T) {
 	heineken := &beer.Beer{
-		ID:    1,
 		Name:  "Heineken",
 		Type:  beer.TypeLager,
 		Style: beer.StylePale,
 	}
 	service, err := setupDB()
 	if err != nil {
-		t.Fatalf("Error setting up the database: %s", err.Error())
+		t.Fatalf("%s %s", errSetup, err.Error())
 	}
 
-	beer, err := service.Get(heineken.ID)
+	beers, err := service.GetAll()
 	if err != nil {
-		t.Fatalf("Error searching in database: %s", err.Error())
+		t.Fatalf("%s %s", errSearch, err.Error())
+	}
+	var id int
+	for _, i := range beers {
+		if cmp.Equal(i, heineken, cmpopts.IgnoreFields(beer.Beer{}, "ID")) {
+			id = i.ID
+		}
 	}
 
-	if diff := cmp.Diff(beer, heineken); diff != "" {
+	b, err := service.Get(id)
+	if err != nil {
+		t.Fatalf("%s %s", errSearch, err.Error())
+	}
+
+	if diff := cmp.Diff(b, heineken, cmpopts.IgnoreFields(beer.Beer{}, "ID")); diff != "" {
 		t.Errorf("TestGet: -want, +got:\n%s", diff)
 	}
 }
@@ -138,7 +152,7 @@ func TestUpdate(t *testing.T) {
 	}
 	service, err := setupDB()
 	if err != nil {
-		t.Fatalf("Error setting up the database: %s", err.Error())
+		t.Fatalf("%s %s", errSetup, err.Error())
 	}
 
 	err = service.Update(heineken)
@@ -150,7 +164,7 @@ func TestUpdate(t *testing.T) {
 func TestRemove(t *testing.T) {
 	service, err := setupDB()
 	if err != nil {
-		t.Fatalf("Error setting up the database: %s", err.Error())
+		t.Fatalf("%s %s", errSetup, err.Error())
 	}
 
 	err = service.Remove(1)
