@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -21,6 +22,7 @@ func main() {
 	}
 	defer db.Close()
 
+	fmt.Println("Testing CI")
 	service := beer.NewService(db)
 	r := mux.NewRouter()
 	n := negroni.New(
