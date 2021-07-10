@@ -33,7 +33,7 @@ This repository offers a set of `make` commands to help the developing process.
 > make create name=Heineken type=2 style=6
 > ```
 
-5. `make getall` : makes a `GET` request to the API to list all Beers.
+5. `make list` : makes a `GET` request to the API to list all Beers.
 6. `make get` : makes a `GET` request to the API to get a specific Beer. It expects the `id` parameter.
 > Example:
 > ```
@@ -51,3 +51,5 @@ This repository offers a set of `make` commands to help the developing process.
 > ```
 > make delete id=1
 > ```
+
+9. `make container` : builds and runs the docker container.

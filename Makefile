@@ -20,8 +20,8 @@ run:
 create: guard-name guard-type guard-style
 	scripts/create.sh -n $(name) -t $(type) -s $(style)
 
-getall:
-	scripts/getall.sh
+list:
+	scripts/list.sh
 
 get: guard-id
 	scripts/get.sh $(id)
@@ -31,3 +31,7 @@ update: guard-id guard-name guard-type guard-style
 
 delete: guard-id
 	scripts/delete.sh $(id)
+
+container:
+	docker build . -t gobeer
+	docker run -d -p 4000:4000 gobeer

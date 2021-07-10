@@ -1,0 +1,6 @@
+.gitignore
+scripts/
+Makefile
+README.md
+coverage.out
+Dockerfile
