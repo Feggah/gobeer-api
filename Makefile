@@ -33,5 +33,5 @@ delete: guard-id
 	scripts/delete.sh $(id)
 
 container:
-	docker build . -t gobeer
-	docker run -d -p 4000:4000 gobeer
+	docker build . -t feggah/gobeer
+	docker run -d -p 4000:4000 feggah/gobeer
