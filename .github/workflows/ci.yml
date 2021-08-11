@@ -26,6 +26,6 @@ jobs:
 
   push:
     runs-on: ubuntu-20.04
-    if: ${{ github.GITHUB_EVENT_NAME == "push" }}
+    if: ${{ github.GITHUB_EVENT_NAME == 'push' }}
     steps:
       - run: echo "Check is working"
